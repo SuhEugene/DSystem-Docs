@@ -1,0 +1,213 @@
+openapi: 3.0.0
+tags:
+  - name: Эндпоинты
+  - name: Модели
+info:
+  title: API Приложений
+  version: 1.0.0
+  description: >-
+    Просто API для взаимодействия с приложением
+
+
+    Всё что ты здесь можешь:
+
+    - Получить логи
+
+    - Отправить АРы любому пользователю
+
+
+    *Это немного, зато это честная работа (c)*
+
+
+    В будущем список будет пополняться. Также вы можете предложить свой энпоинт
+    на [feedbacky](https://app.feedbacky.net/b/dromon)
+  contact:
+    name: SuhEugene
+    url: 'https://discord.gg/xFfNay3'
+    email: suheugene@ya.ru
+servers:
+  - url: 'https://open.drom.one'
+paths:
+  /logs/from:
+    get:
+      summary: Логи "от пользователя"
+      tags:
+        - Эндпоинты
+      operationId: get-logs-from
+      description: 'Получение записей логов, в которых пользователь отправляет АР приложению'
+      parameters: []
+      responses:
+        '200': &ref_3
+          description: 'Логи, в случае отправки АР \[Приложение\] -> \[Пользователь\]'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    fromUser: &ref_0
+                      description: 'Стандартная модель пользователя, возвращаемого сервером'
+                      type: object
+                      title: User
+                      properties:
+                        _id:
+                          type: string
+                        id:
+                          type: string
+                        uuid:
+                          type: string
+                        username:
+                          type: string
+                        sex:
+                          type: integer
+                      x-tags:
+                        - Модели
+                    sum:
+                      type: integer
+                    action:
+                      type: string
+                    more:
+                      type: string
+                    timestamp:
+                      type: integer
+                      description: ''
+              examples:
+                Example:
+                  value:
+                    - fromUser:
+                        _id: 5fdb8ac3daa7e93148dfc543
+                        id: '404236405116764162'
+                        uuid: 468ee80f21434afebaf6c1583c519494
+                        username: SuhEugene
+                        sex: 0
+                      sum: 20
+                      action: app-from
+                      more: Вывод АР
+                      timestamp: 1609285542380
+        '403': &ref_1
+          description: Неудачная попытка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                Example:
+                  value:
+                    error: Invalid token
+  /logs/to:
+    get:
+      summary: Логи "пользователю"
+      tags:
+        - Эндпоинты
+      responses:
+        '200': &ref_2
+          description: 'Логи, в случае отправки АР \[Пользователь\] -> \[Приложение\]'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    toUser: *ref_0
+                    sum:
+                      type: integer
+                    action:
+                      type: string
+                    more:
+                      type: string
+                    timestamp:
+                      type: integer
+                      description: ''
+              examples:
+                Example:
+                  value:
+                    - toUser:
+                        _id: 5fdb8ac3daa7e93148dfc543
+                        id: '404236405116764162'
+                        uuid: 468ee80f21434afebaf6c1583c519494
+                        username: SuhEugene
+                        sex: 0
+                      sum: 20
+                      action: app-from
+                      more: Вывод АР
+                      timestamp: 1609285542380
+        '403': *ref_1
+      operationId: get-logs-to
+      description: 'Получение записей логов, в которых приложение отправляет АР пользователю'
+  '/money/send/{userId}':
+    parameters:
+      - &ref_4
+        name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+          example: SuhEugene
+        description: '**Одно из:** id системы, discord id, minecraft uuid, никнейм'
+    post:
+      summary: Отправка АР
+      tags:
+        - Эндпоинты
+      responses:
+        '200': *ref_2
+        '400':
+          description: Недостаточно АР на балансе
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                Example:
+                  value:
+                    error: Not enough money
+        '403': *ref_1
+      operationId: get-money-send-userId
+      description: Отправка АР приложением пользователю
+      requestBody:
+        content:
+          application/json:
+            schema:
+              description: ''
+              type: object
+              properties:
+                sum:
+                  type: number
+                text:
+                  type: string
+              required:
+                - sum
+            examples:
+              Example:
+                value:
+                  sum: 20
+                  text: Вывод АР
+        description: >-
+          Для отправки АР нужна только сумма, но по желанию можно добавить и
+          описание к отправлению
+components:
+  schemas:
+    User: *ref_0
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      description: >-
+        Токен, который никоим образом не должен попасть во фронтенд. Чтобы его
+        получить, необходимо зашифровать строку `{client_id}:{cleint_secret}` в
+        base64
+  responses:
+    Logs-from: *ref_3
+    Logs-to: *ref_2
+    Forbidden-No-Auth: *ref_1
+  parameters:
+    userId: *ref_4
+security:
+  - Authorization: []
