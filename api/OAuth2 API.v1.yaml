@@ -4,22 +4,14 @@ tags:
 info:
   title: Авторизация OAuth2
   version: 1.0.0
-  description: >-
+  description: |-
     API взаимодействия с модулем OAuth2 Dromon'a
 
-
     Схема действий проста:
-
-    - Пользователь направляется на страницу OAuth2 Dromon'a и нажимает кнопку
-    авторизации
-
-    - Пользователь перенаправляется на вашу страницу с query параметрами
-    `scope`, `code` и `state`
-
-    - Твой сервер, используя `code` получает токены
-
+    - Пользователь направляется на страницу OAuth2 Dromon'a и нажимает кнопку авторизации
+    - Пользователь перенаправляется на вашу страницу с query параметрами `scope`, `code` и `state`
+    - Твой сервер, используя `code` получает токены (`access` и `refresh`)
     - Сервер с помощью `access` токена получает пользователя
-
     - Готово!
   contact:
     name: SuhEugene
@@ -33,7 +25,7 @@ paths:
       summary: Код -> Новая пара токенов
       operationId: post-token
       responses:
-        '200': &ref_0
+        '200':
           description: Успешное получение нового токена
           content:
             application/json:
@@ -57,13 +49,11 @@ paths:
               examples:
                 Example:
                   value:
-                    access_token: >-
-                      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYwOTg4MzgxMH0.ThereWillBeValidSign
-                    refresh_token: >-
-                      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYxMTA5MzQxMH0.ThereWillBeValidSign
+                    access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYwOTg4MzgxMH0.ThereWillBeValidSign
+                    refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYxMTA5MzQxMH0.ThereWillBeValidSign
                     type: Bearer
                     expires_in: 604800
-        '400': &ref_1
+        '400':
           description: Какая-либо ошибка при отправке неверных данных
           content:
             application/json:
@@ -130,9 +120,7 @@ paths:
                   scope:
                     - data
                   code: '12345678901234567890'
-        description: >-
-          Абсолютно все поля, отправляемые на сервер, должны соответствовать
-          хранящимся на сервере
+        description: 'Абсолютно все поля, отправляемые на сервер, должны соответствовать хранящимся на сервере'
       tags:
         - Эндпоинты
   /refresh:
@@ -143,8 +131,58 @@ paths:
       summary: Refresh токен -> Новая пара токенов
       operationId: post-refresh
       responses:
-        '200': *ref_0
-        '400': *ref_1
+        '200':
+          description: Успешное получение нового токена
+          content:
+            application/json:
+              schema:
+                description: ''
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  refresh_token:
+                    type: string
+                  type:
+                    type: string
+                  expires_in:
+                    type: number
+                required:
+                  - access_token
+                  - refresh_token
+                  - type
+                  - expires_in
+              examples:
+                Example:
+                  value:
+                    access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYwOTg4MzgxMH0.ThereWillBeValidSign
+                    refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYxMTA5MzQxMH0.ThereWillBeValidSign
+                    type: Bearer
+                    expires_in: 604800
+        '400':
+          description: Какая-либо ошибка при отправке неверных данных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  e:
+                    type: string
+              examples:
+                Invalid code:
+                  value:
+                    error: Invalid code
+                    e: IC
+                Invalid app:
+                  value:
+                    error: Invalid app
+                    e: IA
+                Invalid token:
+                  value:
+                    error: Invalid token
+                    e: IT
       description: Повторное получение токенов для дальнейшего использования API
       requestBody:
         content:
@@ -187,21 +225,18 @@ paths:
                   redirect_uri: 'https://example.com/login'
                   scope:
                     - data
-                  refresh_token: >-
-                    eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYxMTA5MzQxMH0.ThereWillBeValidSign
+                  refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYxMTA5MzQxMH0.ThereWillBeValidSign
   /api/user:
     get:
       summary: Получение пользователя
       tags:
         - Эндпоинты
       responses:
-        '200': &ref_2
-          description: >-
+        '200':
+          description: |-
             Самый обыкновенный пользователь
 
-
-            `role` и `status` могут отсутствовать, если отсутствуют необходимые
-            `scope`
+            `role` и `status` могут отсутствовать, если отсутствуют необходимые `scope`
           content:
             application/json:
               schema:
@@ -257,10 +292,7 @@ paths:
       operationId: get-api-user
       security:
         - Authorization: []
-      description: >-
-        Возвращает объект пользователя со всеми данными, необходимыми для его
-        идентификации. Опционально можно получить `role` и `status`, если
-        изначально отправить пользователя на правильную страницу
+      description: 'Возвращает объект пользователя со всеми данными, необходимыми для его идентификации. Опционально можно получить `role` и `status`, если изначально отправить пользователя на правильную страницу'
 components:
   securitySchemes:
     Authorization:
@@ -268,6 +300,92 @@ components:
       scheme: bearer
       description: '`access_token`, полученный с помощью `code` или `refresh_token`'
   responses:
-    '400': *ref_1
-    Success-new-token: *ref_0
-    User: *ref_2
+    '400':
+      description: Какая-либо ошибка при отправке неверных данных
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              e:
+                type: string
+          examples:
+            Invalid code:
+              value:
+                error: Invalid code
+                e: IC
+            Invalid app:
+              value:
+                error: Invalid app
+                e: IA
+            Invalid token:
+              value:
+                error: Invalid token
+                e: IT
+    Success-new-token:
+      description: Успешное получение нового токена
+      content:
+        application/json:
+          schema:
+            description: ''
+            type: object
+            properties:
+              access_token:
+                type: string
+              refresh_token:
+                type: string
+              type:
+                type: string
+              expires_in:
+                type: number
+            required:
+              - access_token
+              - refresh_token
+              - type
+              - expires_in
+          examples:
+            Example:
+              value:
+                access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYwOTg4MzgxMH0.ThereWillBeValidSign
+                refresh_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkYjhhYzNkYWE3ZTkzMTQ4ZGZjNTQzIiwiYXBwX2lkIjoiNWZkMTNiM2M0NWE2ZWU1MWYxYTZmNGQzIiwic2NvcGUiOlsiZGF0YSJdLCJpYXQiOjE2MDkyNzkwMTAsImV4cCI6MTYxMTA5MzQxMH0.ThereWillBeValidSign
+                type: Bearer
+                expires_in: 604800
+    User:
+      description: |-
+        Самый обыкновенный пользователь
+
+        `role` и `status` могут отсутствовать, если отсутствуют необходимые `scope`
+      content:
+        application/json:
+          schema:
+            description: ''
+            type: object
+            properties:
+              uuid:
+                type: string
+              id:
+                type: string
+              _id:
+                type: string
+              username:
+                type: string
+              status:
+                type: string
+              role:
+                type: number
+            required:
+              - uuid
+              - id
+              - _id
+              - username
+          examples:
+            Example:
+              value:
+                uuid: 468ee80f21434afebaf6c1583c519494
+                id: '404236405116764162'
+                _id: 5fdb8ac3daa7e93148dfc543
+                username: SuhEugene
+                status: Насрал в кувшин
+                role: 2
